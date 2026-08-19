@@ -33,14 +33,6 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        <Section title="Tab close protection">
-          <Toggle
-            label="Confirm before the tab is closed"
-            checked={settings.closeProtection}
-            onChange={(v) => update({ closeProtection: v })}
-          />
-        </Section>
-
         <Section title="Panic key">
           <div className="grid grid-cols-[5rem_1fr] gap-2">
             <Field

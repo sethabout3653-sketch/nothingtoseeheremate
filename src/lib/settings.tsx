@@ -11,7 +11,6 @@ import {
 import { DEFAULT_WISP, SEARCH_ENGINES } from "./proxy";
 
 export type Settings = {
-  closeProtection: boolean;
   panicKey: string;
   panicUrl: string;
   wisp: string;
@@ -19,7 +18,6 @@ export type Settings = {
 };
 
 const DEFAULTS: Settings = {
-  closeProtection: false,
   panicKey: "`",
   panicUrl: "https://classroom.google.com",
   wisp: DEFAULT_WISP,
@@ -94,14 +92,14 @@ export function useBrowserChrome() {
   }, [ready]);
 
   useEffect(() => {
-    if (!ready || !settings.closeProtection) return;
+    if (!ready) return;
     const handler = (event: BeforeUnloadEvent) => {
       event.preventDefault();
       event.returnValue = "";
     };
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
-  }, [ready, settings.closeProtection]);
+  }, [ready]);
 
   useEffect(() => {
     if (!ready || !settings.panicKey) return;
