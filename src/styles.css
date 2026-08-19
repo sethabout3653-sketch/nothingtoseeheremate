@@ -63,7 +63,7 @@
 
 :root {
   --radius: 0.625rem;
-  /* Matter is pure monochrome: every token is a neutral with zero chroma. */
+  /* Frosted is pure monochrome: every token is a neutral with zero chroma. */
   --background: oklch(0.13 0 0);
   --foreground: oklch(0.97 0 0);
   --card: oklch(0.17 0 0);

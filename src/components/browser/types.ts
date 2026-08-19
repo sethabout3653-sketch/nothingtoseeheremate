@@ -1,4 +1,4 @@
-export type TabKind = "new" | "web" | "lessons" | "lesson" | "games" | "game";
+export type TabKind = "new" | "web" | "games" | "game";
 
 export type Tab = {
   id: string;
@@ -8,10 +8,6 @@ export type Tab = {
   url: string;
   /** Pending navigation target for web tabs. */
   target: string;
-  lessonId?: string | number;
-  lessonUrl?: string;
-  lessonName?: string;
-  lessonAuthor?: string;
   gameId?: string | number;
   gameUrl?: string;
   gameName?: string;

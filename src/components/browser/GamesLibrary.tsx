@@ -2,15 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { BookOpen, Search, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { fetchLessons, lessonCover, type Lesson } from "@/lib/lessons";
+import { fetchGames, gameCover, type Game } from "@/lib/games";
 
-export function LessonsLibrary({ onLaunch }: { onLaunch: (lesson: Lesson) => void }) {
+export function GamesLibrary({ onLaunch }: { onLaunch: (game: Game) => void }) {
   const [query, setQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string>("All");
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["gn-math-lessons"],
-    queryFn: fetchLessons,
+    queryKey: ["gn-math-games"],
+    queryFn: fetchGames,
     staleTime: 1000 * 60 * 30,
   });
 
@@ -30,7 +30,7 @@ export function LessonsLibrary({ onLaunch }: { onLaunch: (lesson: Lesson) => voi
     return ["All", ...sorted];
   }, [data]);
 
-  const lessons = useMemo(() => {
+  const games = useMemo(() => {
     const list = data ?? [];
     const q = query.trim().toLowerCase();
     return list.filter((g) => {
@@ -53,7 +53,7 @@ export function LessonsLibrary({ onLaunch }: { onLaunch: (lesson: Lesson) => voi
               </span>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
-              {isLoading ? "Loading library…" : `${lessons.length} titles available`}
+              {isLoading ? "Loading library…" : `${games.length} titles available`}
             </p>
           </div>
           <div className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2">
@@ -101,16 +101,16 @@ export function LessonsLibrary({ onLaunch }: { onLaunch: (lesson: Lesson) => voi
               />
             ))}
 
-          {lessons.map((lesson) => (
+          {games.map((game) => (
             <button
-              key={lesson.id}
-              onClick={() => onLaunch(lesson)}
+              key={game.id}
+              onClick={() => onLaunch(game)}
               className="group overflow-hidden rounded-xl border border-border bg-card text-left transition-colors hover:border-foreground/40"
             >
               <div className="relative aspect-square overflow-hidden bg-muted">
                 <img
-                  src={lessonCover(lesson)}
-                  alt={`${lesson.name} cover art`}
+                  src={gameCover(game)}
+                  alt={`${game.name} cover art`}
                   loading="lazy"
                   className="h-full w-full object-cover grayscale transition duration-300 group-hover:scale-105 group-hover:grayscale-0"
                   onError={(e) => {
@@ -120,9 +120,9 @@ export function LessonsLibrary({ onLaunch }: { onLaunch: (lesson: Lesson) => voi
                 <BookOpen className="absolute inset-0 m-auto h-8 w-8 text-muted-foreground opacity-40" />
               </div>
               <div className="p-2.5">
-                <p className="truncate text-xs font-medium text-foreground">{lesson.name}</p>
-                {lesson.author && (
-                  <p className="truncate text-[11px] text-muted-foreground">{lesson.author}</p>
+                <p className="truncate text-xs font-medium text-foreground">{game.name}</p>
+                {game.author && (
+                  <p className="truncate text-[11px] text-muted-foreground">{game.author}</p>
                 )}
               </div>
             </button>
@@ -132,5 +132,3 @@ export function LessonsLibrary({ onLaunch }: { onLaunch: (lesson: Lesson) => voi
     </div>
   );
 }
-
-export const GamesLibrary = LessonsLibrary;

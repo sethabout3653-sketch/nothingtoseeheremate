@@ -43,13 +43,13 @@ function contentType(path: string) {
   return TYPES[ext] ?? "application/octet-stream";
 }
 
-/** Modules assume a full-window document; iframes need the sizing made explicit. */
+/** Games assume a full-window document; iframes need the sizing made explicit. */
 const FIT_CSS =
   "<style>html,body{height:100%;width:100%;margin:0;padding:0;overflow:hidden;background:#000}" +
   "body>div,body>canvas,body>embed,body>object,body>iframe,#ruffle,#player,ruffle-player" +
   "{width:100%!important;height:100%!important}</style>";
 
-/** Rewrites root-relative references so nested assets stay inside the service. */
+/** Rewrites root-relative references so nested assets stay inside the proxy. */
 function rewriteHtml(html: string, dir: string) {
   let out = html.replace(/(src|href|data|action)\s*=\s*(["'])\/(?!\/)/gi, `$1=$2${PREFIX}/`);
   out = out.replace(/(url\()\s*(["']?)\/(?!\/)/gi, `$1$2${PREFIX}/`);
