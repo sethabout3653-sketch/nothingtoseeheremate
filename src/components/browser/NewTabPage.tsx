@@ -1,4 +1,4 @@
-import { Gamepad2, Globe, Plus, Search, X } from "lucide-react";
+import { BookOpen, Globe, Plus, Search, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 
@@ -18,7 +18,7 @@ type Props = {
 
 export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenGames }: Props) {
   const { settings } = useSettings();
-  const logoText = settings.logoText !== undefined ? settings.logoText : "Frosted";
+  const logoText = settings.logoText !== undefined ? settings.logoText : "Mater";
   const [value, setValue] = useState("");
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   const [adding, setAdding] = useState(false);
@@ -98,8 +98,8 @@ export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenGames }: 
         </form>
 
         <div className="mt-14 flex flex-wrap items-start justify-center gap-10">
-          <ShortcutButton label="Games" onClick={onOpenGames}>
-            <Gamepad2 className="h-6 w-6" />
+          <ShortcutButton label="Lessons" onClick={onOpenGames}>
+            <BookOpen className="h-6 w-6" />
           </ShortcutButton>
 
           {shortcuts.map((s) => (

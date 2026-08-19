@@ -10,58 +10,7 @@ import {
 
 import { DEFAULT_WISP, SEARCH_ENGINES } from "./proxy";
 
-export type Cloak = {
-  id: string;
-  label: string;
-  title: string;
-  icon: string;
-};
-
-export const CLOAKS: Cloak[] = [
-  { id: "none", label: "None", title: "Frosted", icon: "/chrome.svg" },
-  {
-    id: "classroom",
-    label: "Google Classroom",
-    title: "Home",
-    icon: "https://www.google.com/s2/favicons?domain=classroom.google.com&sz=64",
-  },
-  {
-    id: "drive",
-    label: "Google Drive",
-    title: "My Drive - Google Drive",
-    icon: "https://www.google.com/s2/favicons?domain=drive.google.com&sz=64",
-  },
-  {
-    id: "docs",
-    label: "Google Docs",
-    title: "Untitled document - Google Docs",
-    icon: "https://www.google.com/s2/favicons?domain=docs.google.com&sz=64",
-  },
-  {
-    id: "canvas",
-    label: "Canvas",
-    title: "Dashboard",
-    icon: "https://www.google.com/s2/favicons?domain=instructure.com&sz=64",
-  },
-  {
-    id: "schoology",
-    label: "Schoology",
-    title: "Home | Schoology",
-    icon: "https://www.google.com/s2/favicons?domain=schoology.com&sz=64",
-  },
-  {
-    id: "clever",
-    label: "Clever",
-    title: "Clever | Portal",
-    icon: "https://www.google.com/s2/favicons?domain=clever.com&sz=64",
-  },
-  { id: "custom", label: "Custom", title: "", icon: "" },
-];
-
 export type Settings = {
-  cloakId: string;
-  customTitle: string;
-  customIcon: string;
   closeProtection: boolean;
   panicKey: string;
   panicUrl: string;
@@ -71,15 +20,12 @@ export type Settings = {
 };
 
 const DEFAULTS: Settings = {
-  cloakId: "none",
-  customTitle: "",
-  customIcon: "",
   closeProtection: false,
   panicKey: "`",
   panicUrl: "https://classroom.google.com",
   wisp: DEFAULT_WISP,
   engine: SEARCH_ENGINES[0].url,
-  logoText: "Frosted",
+  logoText: "Mater",
 };
 
 const STORAGE_KEY = "frosted.settings";
@@ -129,35 +75,16 @@ export function useSettings() {
   return ctx;
 }
 
-export function resolveCloak(settings: Settings): { title: string; icon: string } | null {
-  if (settings.cloakId === "none") {
-    return {
-      title: settings.logoText !== undefined ? settings.logoText : "Frosted",
-      icon: "/chrome.svg",
-    };
-  }
-  if (settings.cloakId === "custom") {
-    return {
-      title:
-        settings.customTitle || (settings.logoText !== undefined ? settings.logoText : "Frosted"),
-      icon: settings.customIcon || "/chrome.svg",
-    };
-  }
-  const cloak = CLOAKS.find((c) => c.id === settings.cloakId);
-  return cloak ? { title: cloak.title, icon: cloak.icon } : null;
-}
-
 /** Applies tab title + favicon, close protection and the panic key. */
 export function useBrowserChrome(pageTitle: string, pageIcon: string) {
   const { settings, ready } = useSettings();
 
   useEffect(() => {
     if (!ready) return;
-    const cloak = resolveCloak(settings);
-    document.title = cloak ? cloak.title : pageTitle;
+    const defaultTitle = settings.logoText !== undefined ? settings.logoText : "Mater";
+    document.title = pageTitle || defaultTitle;
 
-    const href = cloak ? cloak.icon : pageIcon;
-    if (!href) return;
+    const href = pageIcon || "/chrome.svg";
     let link = document.querySelector<HTMLLinkElement>("link[data-frosted-icon]");
     if (!link) {
       link = document.createElement("link");

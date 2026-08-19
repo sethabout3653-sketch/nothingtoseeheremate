@@ -1,4 +1,4 @@
-import { ArrowLeft, Expand, ExternalLink, Loader2, RotateCw } from "lucide-react";
+import { ArrowLeft, Expand, Loader2, RotateCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { fetchGameHtml, resolveGameUrl } from "@/lib/games";
@@ -45,22 +45,6 @@ export function GameView({ url, name, author, authorLink, onBack }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
 
-  const handleOpenBlank = () => {
-    const win = window.open("about:blank", "_blank");
-    if (!win) return;
-    if (htmlContent) {
-      win.document.open();
-      win.document.write(htmlContent);
-      win.document.close();
-    } else if (resolvedUrl) {
-      const frame = win.document.createElement("iframe");
-      frame.style.cssText = "position:fixed;inset:0;border:0;width:100%;height:100%";
-      frame.src = resolvedUrl;
-      win.document.body.style.margin = "0";
-      win.document.body.appendChild(frame);
-    }
-  };
-
   return (
     <div className="flex h-full flex-col bg-background">
       <div className="flex items-center gap-2 border-b border-border bg-card px-3 py-2">
@@ -93,14 +77,6 @@ export function GameView({ url, name, author, authorLink, onBack }: Props) {
         </div>
 
         <div className="ml-auto flex items-center gap-1">
-          <button
-            title="Open in about:blank"
-            onClick={handleOpenBlank}
-            className="flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-[11px] text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-          >
-            <ExternalLink className="h-3 w-3" />
-            <span className="hidden sm:inline">Cloak</span>
-          </button>
           <button
             aria-label="Reload game"
             onClick={loadGame}

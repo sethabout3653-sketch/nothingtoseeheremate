@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { motion } from "motion/react";
 
-import { CLOAKS, useSettings } from "@/lib/settings";
+import { useSettings } from "@/lib/settings";
 import { DEFAULT_WISP, SEARCH_ENGINES, WISP_SERVERS } from "@/lib/proxy";
 
 export function SettingsPanel({ onClose }: { onClose: () => void }) {
@@ -37,54 +37,13 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
         <Section title="Appearance">
           <Field
             label="Logo / App Title Text"
-            value={settings.logoText !== undefined ? settings.logoText : "Frosted"}
+            value={settings.logoText !== undefined ? settings.logoText : "Mater"}
             onChange={(v) => update({ logoText: v })}
-            placeholder="Frosted"
+            placeholder="Mater"
           />
           <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-            Customizes the homepage logo and adapts the uncamouflaged browser tab title/favicon to
-            match!
+            Customizes the homepage logo and browser tab title.
           </p>
-        </Section>
-
-        <Section title="Tab cloak">
-          <div className="grid grid-cols-2 gap-2">
-            {CLOAKS.map((cloak) => (
-              <button
-                key={cloak.id}
-                onClick={() => update({ cloakId: cloak.id })}
-                className={`rounded-lg border px-3 py-2 text-left text-xs transition-colors ${
-                  settings.cloakId === cloak.id
-                    ? "border-foreground bg-accent text-foreground"
-                    : "border-border text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {cloak.id === "none" ? `None (${settings.logoText || "Frosted"})` : cloak.label}
-              </button>
-            ))}
-          </div>
-          {settings.cloakId === "custom" && (
-            <div className="mt-3 space-y-2">
-              <Field
-                label="Custom title"
-                value={settings.customTitle}
-                onChange={(v) => update({ customTitle: v })}
-                placeholder="Home"
-              />
-              <Field
-                label="Custom favicon URL"
-                value={settings.customIcon}
-                onChange={(v) => update({ customIcon: v })}
-                placeholder="https://example.com/favicon.ico"
-              />
-            </div>
-          )}
-          <button
-            onClick={() => openAboutBlank()}
-            className="mt-3 w-full rounded-lg border border-border px-3 py-2 text-xs text-foreground hover:bg-accent"
-          >
-            Open in about:blank
-          </button>
         </Section>
 
         <Section title="Tab close protection">

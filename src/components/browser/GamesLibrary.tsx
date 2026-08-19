@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Gamepad2, Search, Sparkles } from "lucide-react";
+import { BookOpen, Search, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { fetchGames, gameCover, type Game } from "@/lib/games";
@@ -47,7 +47,7 @@ export function GamesLibrary({ onLaunch }: { onLaunch: (game: Game) => void }) {
         <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-4xl font-light tracking-tight text-foreground">Games</h1>
+              <h1 className="text-4xl font-light tracking-tight text-foreground">Lessons</h1>
               <span className="flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-0.5 text-[11px] text-muted-foreground">
                 <Sparkles className="h-3 w-3 text-foreground" /> gn-math.dev
               </span>
@@ -61,7 +61,7 @@ export function GamesLibrary({ onLaunch }: { onLaunch: (game: Game) => void }) {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search games or creators"
+              placeholder="Search lessons or creators"
               className="w-56 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
             />
           </div>
@@ -88,7 +88,7 @@ export function GamesLibrary({ onLaunch }: { onLaunch: (game: Game) => void }) {
 
         {isError && (
           <p className="py-16 text-center text-sm text-muted-foreground">
-            The game source could not be reached. Check your connection and try again.
+            The lesson source could not be reached. Check your connection and try again.
           </p>
         )}
 
@@ -117,7 +117,7 @@ export function GamesLibrary({ onLaunch }: { onLaunch: (game: Game) => void }) {
                     e.currentTarget.style.display = "none";
                   }}
                 />
-                <Gamepad2 className="absolute inset-0 m-auto h-8 w-8 text-muted-foreground opacity-40" />
+                <BookOpen className="absolute inset-0 m-auto h-8 w-8 text-muted-foreground opacity-40" />
               </div>
               <div className="p-2.5">
                 <p className="truncate text-xs font-medium text-foreground">{game.name}</p>

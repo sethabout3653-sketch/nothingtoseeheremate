@@ -7,17 +7,17 @@ import { SettingsProvider } from "@/lib/settings";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Frosted — Private Browser & Game Library" },
+      { title: "Mater — Private Browser & Lessons" },
       {
         name: "description",
         content:
-          "Frosted is a monochrome tabbed proxy browser with a built-in game library, tab cloaking and close protection.",
+          "Mater is a monochrome tabbed proxy browser with built-in lessons and close protection.",
       },
-      { property: "og:title", content: "Frosted — Private Browser & Game Library" },
+      { property: "og:title", content: "Mater — Private Browser & Lessons" },
       {
         property: "og:description",
         content:
-          "Browse the web through a fast proxy and play hundreds of games in one clean black-and-white workspace.",
+          "Browse the web through a fast proxy and access lessons in one clean black-and-white workspace.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },

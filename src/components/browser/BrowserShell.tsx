@@ -1,7 +1,7 @@
 import {
   ArrowLeft,
   ArrowRight,
-  Gamepad2,
+  BookOpen,
   Plus,
   RotateCw,
   Settings as SettingsIcon,
@@ -33,7 +33,7 @@ export function BrowserShell() {
   const [reloadRotate, setReloadRotate] = useState(0);
 
   const active = tabs.find((t) => t.id === activeId) ?? tabs[0]!;
-  useBrowserChrome(active.title || "Frosted", active.icon);
+  useBrowserChrome(active.title || "Mater", active.icon);
 
   const patchTab = useCallback((id: string, patch: Partial<Tab>) => {
     setTabs((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
@@ -74,13 +74,13 @@ export function BrowserShell() {
   };
 
   const openGames = (id = activeId) =>
-    patchTab(id, { kind: "games", title: "Games", url: "frosted://games", icon: "" });
+    patchTab(id, { kind: "games", title: "Lessons", url: "frosted://lessons", icon: "" });
 
   const launchGame = (game: Game) =>
     patchTab(activeId, {
       kind: "game",
       title: game.name,
-      url: `frosted://games/${game.id}`,
+      url: `frosted://lessons/${game.id}`,
       gameId: game.id,
       gameUrl: game.url,
       gameName: game.name,
@@ -113,7 +113,7 @@ export function BrowserShell() {
                 }`}
               >
                 {tab.kind === "games" || tab.kind === "game" ? (
-                  <Gamepad2 className="h-3.5 w-3.5 shrink-0" />
+                  <BookOpen className="h-3.5 w-3.5 shrink-0" />
                 ) : tab.kind === "new" || tab.icon === "/chrome.svg" ? (
                   <ChromeIcon className="h-3.5 w-3.5 shrink-0" />
                 ) : tab.icon ? (
@@ -206,10 +206,10 @@ export function BrowserShell() {
         </form>
 
         <ToolbarButton
-          label="Games"
-          onClick={() => addTab({ kind: "games", title: "Games", url: "frosted://games" })}
+          label="Lessons"
+          onClick={() => addTab({ kind: "games", title: "Lessons", url: "frosted://lessons" })}
         >
-          <Gamepad2 className="h-4 w-4" />
+          <BookOpen className="h-4 w-4" />
         </ToolbarButton>
         <ToolbarButton label="Settings" onClick={() => setShowSettings(true)}>
           <SettingsIcon className="h-4 w-4" />
