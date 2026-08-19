@@ -16,6 +16,61 @@ export const WISP_SERVERS = [
   { name: "Shadow", url: "wss://shadow.freewisp.org/wisp/" },
 ] as const;
 
+/** Automatically selects the best Wisp relay based on the target URL */
+export function getAutoWispForUrl(targetUrl?: string): string {
+  if (!targetUrl) return DEFAULT_WISP;
+  try {
+    const raw = targetUrl.startsWith("http") ? targetUrl : `https://${targetUrl}`;
+    const url = new URL(raw);
+    const host = url.hostname.toLowerCase();
+
+    // High bandwidth / media & streaming domains
+    if (
+      host.includes("youtube") ||
+      host.includes("twitch") ||
+      host.includes("vimeo") ||
+      host.includes("spotify") ||
+      host.includes("soundcloud") ||
+      host.includes("discord")
+    ) {
+      return "wss://wisp.mercurywork.shop/";
+    }
+    // Search engines & dynamic query APIs
+    if (
+      host.includes("duckduckgo") ||
+      host.includes("google") ||
+      host.includes("bing") ||
+      host.includes("brave") ||
+      host.includes("yahoo") ||
+      host.includes("wikipedia")
+    ) {
+      return "wss://wisp.terbiumon.top/wisp/";
+    }
+    // Gaming & interactive WASM portals
+    if (
+      host.includes("github") ||
+      host.includes("itch.io") ||
+      host.includes("crazygames") ||
+      host.includes("poki") ||
+      host.includes("coolmathgames") ||
+      host.includes("now.gg") ||
+      host.includes("roblox")
+    ) {
+      return "wss://anura.pro/";
+    }
+    // Fast hash-based deterministic load balancing across reliable relays for general web
+    let hash = 0;
+    for (let i = 0; i < host.length; i++) {
+      hash = (hash << 5) - hash + host.charCodeAt(i);
+      hash |= 0;
+    }
+    const index = Math.abs(hash) % WISP_SERVERS.length;
+    return WISP_SERVERS[index].url;
+  } catch {
+    return DEFAULT_WISP;
+  }
+}
+
 type AnyRecord = Record<string, unknown>;
 
 let scriptPromise: Promise<void> | null = null;
@@ -44,8 +99,9 @@ async function ensureScripts() {
   await scriptPromise;
 }
 
-async function ensureTransport(wisp: string) {
-  const normalizedWisp = wisp.endsWith("/") ? wisp : `${wisp}/`;
+export async function ensureTransport(wisp?: string) {
+  const selectedWisp = wisp || DEFAULT_WISP;
+  const normalizedWisp = selectedWisp.endsWith("/") ? selectedWisp : `${selectedWisp}/`;
   if (currentWisp === normalizedWisp && connection) return;
   const dynamicImport = new Function("p", "return import(p)") as (p: string) => Promise<AnyRecord>;
   let mod: AnyRecord;
@@ -96,7 +152,7 @@ async function ensureTransport(wisp: string) {
 }
 
 /** Boots Scramjet + the service worker + the wisp transport. Idempotent. */
-export async function initProxy(wisp: string): Promise<AnyRecord> {
+export async function initProxy(wisp?: string, targetUrl?: string): Promise<AnyRecord> {
   await ensureScripts();
 
   if (!controllerPromise) {
@@ -123,7 +179,8 @@ export async function initProxy(wisp: string): Promise<AnyRecord> {
   }
 
   const controller = await controllerPromise;
-  await ensureTransport(wisp);
+  const activeWisp = wisp || getAutoWispForUrl(targetUrl);
+  await ensureTransport(activeWisp);
   return controller;
 }
 

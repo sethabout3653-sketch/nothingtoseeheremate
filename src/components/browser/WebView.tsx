@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 
-import { initProxy } from "@/lib/proxy";
+import { ensureTransport, getAutoWispForUrl, initProxy } from "@/lib/proxy";
 
 type Props = {
   url: string;
-  wisp: string;
+  wisp?: string;
   active: boolean;
   onMeta: (meta: { title?: string; url?: string; icon?: string }) => void;
   registerNav: (nav: { back: () => void; forward: () => void; reload: () => void } | null) => void;
@@ -25,7 +25,8 @@ export function WebView({ url, wisp, active, onMeta, registerNav }: Props) {
 
     (async () => {
       try {
-        const controller = await initProxy(wisp);
+        const targetWisp = wisp || getAutoWispForUrl(url || lastUrl.current);
+        const controller = await initProxy(targetWisp, url || lastUrl.current);
         if (cancelled || !hostRef.current) return;
 
         const createFrame = controller["createFrame"] as () => AnyRecord;
@@ -89,10 +90,12 @@ export function WebView({ url, wisp, active, onMeta, registerNav }: Props) {
   useEffect(() => {
     if (!url || url === lastUrl.current) return;
     lastUrl.current = url;
+    const targetWisp = wisp || getAutoWispForUrl(url);
+    ensureTransport(targetWisp).catch(() => {});
     const frame = frameRef.current;
     if (frame) (frame["go"] as (u: string) => void).call(frame, url);
     metaRef.current({ url, icon: faviconFor(url) });
-  }, [url]);
+  }, [url, wisp]);
 
   return <div ref={hostRef} className="h-full w-full" data-active={active} />;
 }

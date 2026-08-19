@@ -7,13 +7,13 @@ import { SettingsProvider } from "@/lib/settings";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Mater — Private Browser & Lessons" },
+      { title: "Matter — Private Browser & Lessons" },
       {
         name: "description",
         content:
-          "Mater is a monochrome tabbed proxy browser with built-in lessons and close protection.",
+          "Matter is a monochrome tabbed proxy browser with built-in lessons and close protection.",
       },
-      { property: "og:title", content: "Mater — Private Browser & Lessons" },
+      { property: "og:title", content: "Matter — Private Browser & Lessons" },
       {
         property: "og:description",
         content:

@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 
 import { SEARCH_ENGINES } from "@/lib/proxy";
-import { useSettings } from "@/lib/settings";
 
 export type Shortcut = { id: string; label: string; url: string };
 
@@ -17,8 +16,7 @@ type Props = {
 };
 
 export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenGames }: Props) {
-  const { settings } = useSettings();
-  const logoText = settings.logoText !== undefined ? settings.logoText : "Mater";
+  const logoText = "Matter";
   const [value, setValue] = useState("");
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   const [adding, setAdding] = useState(false);

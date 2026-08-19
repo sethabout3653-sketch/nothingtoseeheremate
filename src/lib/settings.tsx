@@ -16,7 +16,6 @@ export type Settings = {
   panicUrl: string;
   wisp: string;
   engine: string;
-  logoText: string;
 };
 
 const DEFAULTS: Settings = {
@@ -25,7 +24,6 @@ const DEFAULTS: Settings = {
   panicUrl: "https://classroom.google.com",
   wisp: DEFAULT_WISP,
   engine: SEARCH_ENGINES[0].url,
-  logoText: "Mater",
 };
 
 const STORAGE_KEY = "frosted.settings";
@@ -75,25 +73,25 @@ export function useSettings() {
   return ctx;
 }
 
-/** Applies tab title + favicon, close protection and the panic key. */
-export function useBrowserChrome(pageTitle: string, pageIcon: string) {
+/** Keeps the real browser tab title locked to Matter and favicon to /matter.svg, plus close protection and panic key. */
+export function useBrowserChrome() {
   const { settings, ready } = useSettings();
 
   useEffect(() => {
     if (!ready) return;
-    const defaultTitle = settings.logoText !== undefined ? settings.logoText : "Mater";
-    document.title = pageTitle || defaultTitle;
+    document.title = "Matter";
 
-    const href = pageIcon || "/chrome.svg";
-    let link = document.querySelector<HTMLLinkElement>("link[data-frosted-icon]");
+    const href = "/matter.svg";
+    let link = document.querySelector<HTMLLinkElement>("link[data-matter-icon]");
     if (!link) {
       link = document.createElement("link");
       link.rel = "icon";
-      link.dataset["frostedIcon"] = "true";
+      link.type = "image/svg+xml";
+      link.dataset["matterIcon"] = "true";
       document.head.appendChild(link);
     }
     link.href = href;
-  }, [settings, ready, pageTitle, pageIcon]);
+  }, [ready]);
 
   useEffect(() => {
     if (!ready || !settings.closeProtection) return;

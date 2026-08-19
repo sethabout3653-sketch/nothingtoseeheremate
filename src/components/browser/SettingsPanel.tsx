@@ -2,7 +2,6 @@ import { X } from "lucide-react";
 import { motion } from "motion/react";
 
 import { useSettings } from "@/lib/settings";
-import { DEFAULT_WISP, SEARCH_ENGINES, WISP_SERVERS } from "@/lib/proxy";
 
 export function SettingsPanel({ onClose }: { onClose: () => void }) {
   const { settings, update } = useSettings();
@@ -34,18 +33,6 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
           </button>
         </div>
 
-        <Section title="Appearance">
-          <Field
-            label="Logo / App Title Text"
-            value={settings.logoText !== undefined ? settings.logoText : "Mater"}
-            onChange={(v) => update({ logoText: v })}
-            placeholder="Mater"
-          />
-          <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-            Customizes the homepage logo and browser tab title.
-          </p>
-        </Section>
-
         <Section title="Tab close protection">
           <Toggle
             label="Confirm before the tab is closed"
@@ -69,47 +56,6 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
               placeholder="https://classroom.google.com"
             />
           </div>
-        </Section>
-
-        <Section title="Proxy">
-          <Field
-            label="Wisp server"
-            value={settings.wisp}
-            onChange={(v) => update({ wisp: v })}
-            placeholder={DEFAULT_WISP}
-          />
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {WISP_SERVERS.map((s) => (
-              <button
-                key={s.url}
-                onClick={() => update({ wisp: s.url })}
-                className={`rounded-full border px-2.5 py-1 text-[11px] transition-colors ${
-                  settings.wisp === s.url
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-border text-muted-foreground hover:bg-accent hover:text-foreground"
-                }`}
-              >
-                {s.name}
-              </button>
-            ))}
-          </div>
-          <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-            If a site fails with a TLS handshake error, switch relays here and reload the tab.
-          </p>
-          <label className="mt-3 block text-[11px] uppercase tracking-wide text-muted-foreground">
-            Default search engine
-          </label>
-          <select
-            value={settings.engine}
-            onChange={(e) => update({ engine: e.target.value })}
-            className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none"
-          >
-            {SEARCH_ENGINES.map((e) => (
-              <option key={e.name} value={e.url}>
-                {e.name}
-              </option>
-            ))}
-          </select>
         </Section>
       </motion.aside>
     </motion.div>

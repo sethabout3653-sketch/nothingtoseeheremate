@@ -33,7 +33,7 @@ export function BrowserShell() {
   const [reloadRotate, setReloadRotate] = useState(0);
 
   const active = tabs.find((t) => t.id === activeId) ?? tabs[0]!;
-  useBrowserChrome(active.title || "Mater", active.icon);
+  useBrowserChrome();
 
   const patchTab = useCallback((id: string, patch: Partial<Tab>) => {
     setTabs((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
@@ -114,19 +114,19 @@ export function BrowserShell() {
               >
                 {tab.kind === "games" || tab.kind === "game" ? (
                   <BookOpen className="h-3.5 w-3.5 shrink-0" />
-                ) : tab.kind === "new" || tab.icon === "/chrome.svg" ? (
-                  <ChromeIcon className="h-3.5 w-3.5 shrink-0" />
+                ) : tab.kind === "new" || tab.icon === "/matter.svg" ? (
+                  <img src="/matter.svg" alt="" className="h-3.5 w-3.5 shrink-0 rounded-sm" />
                 ) : tab.icon ? (
                   <img
                     src={tab.icon}
                     alt=""
                     className="h-3.5 w-3.5 shrink-0 rounded-sm"
                     onError={(e) => {
-                      e.currentTarget.style.display = "none";
+                      e.currentTarget.src = "/matter.svg";
                     }}
                   />
                 ) : (
-                  <ChromeIcon className="h-3.5 w-3.5 shrink-0" />
+                  <img src="/matter.svg" alt="" className="h-3.5 w-3.5 shrink-0 rounded-sm" />
                 )}
                 <span className="truncate flex-1">{tab.title}</span>
                 {tabs.length > 1 && (
