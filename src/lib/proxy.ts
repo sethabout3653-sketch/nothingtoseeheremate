@@ -196,7 +196,7 @@ export function toUrl(input: string, engine: string): string {
 }
 
 export const SEARCH_ENGINES = [
-  { name: "DuckDuckGo", url: "https://duckduckgo.com/?q=%s", host: "duckduckgo.com" },
   { name: "Google", url: "https://www.google.com/search?q=%s", host: "google.com" },
+  { name: "DuckDuckGo", url: "https://duckduckgo.com/?q=%s", host: "duckduckgo.com" },
   { name: "Bing", url: "https://www.bing.com/search?q=%s", host: "bing.com" },
 ] as const;
