@@ -1663,11 +1663,19 @@ var EpoxyTransport = class {
     if (body instanceof Blob) body = await body.arrayBuffer();
     try {
       let headersObj = {};
-      for (let [key, value] of headers) {
-        if (headersObj[key]) {
-          console.warn(`Duplicate header key "${key}" detected. Overwriting previous value.`);
+      if (headers) {
+        if (typeof headers[Symbol.iterator] === "function") {
+          for (let [key, value] of headers) {
+            if (headersObj[key]) {
+              console.warn(`Duplicate header key "${key}" detected. Overwriting previous value.`);
+            }
+            headersObj[key] = value;
+          }
+        } else if (typeof headers === "object") {
+          for (let [key, value] of Object.entries(headers)) {
+            headersObj[key] = value;
+          }
         }
-        headersObj[key] = value;
       }
       let res = await this.client.fetch(remote.href, {
         method,
@@ -1708,11 +1716,19 @@ var EpoxyTransport = class {
         data instanceof Uint8Array ? onmessage(data.buffer) : onmessage(data),
     );
     let headersObj = {};
-    for (let [key, value] of requestHeaders) {
-      if (headersObj[key]) {
-        console.warn(`Duplicate header key "${key}" detected. Overwriting previous value.`);
+    if (requestHeaders) {
+      if (typeof requestHeaders[Symbol.iterator] === "function") {
+        for (let [key, value] of requestHeaders) {
+          if (headersObj[key]) {
+            console.warn(`Duplicate header key "${key}" detected. Overwriting previous value.`);
+          }
+          headersObj[key] = value;
+        }
+      } else if (typeof requestHeaders === "object") {
+        for (let [key, value] of Object.entries(requestHeaders)) {
+          headersObj[key] = value;
+        }
       }
-      headersObj[key] = value;
     }
     let ws = this.client.connect_websocket(handlers, url.href, protocols, headersObj);
     return [
