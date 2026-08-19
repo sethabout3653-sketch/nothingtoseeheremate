@@ -114,19 +114,19 @@ export function BrowserShell() {
               >
                 {tab.kind === "games" || tab.kind === "game" ? (
                   <BookOpen className="h-3.5 w-3.5 shrink-0" />
-                ) : tab.kind === "new" || tab.icon === "/matter.svg" ? (
-                  <img src="/matter.svg" alt="" className="h-3.5 w-3.5 shrink-0 rounded-sm" />
+                ) : tab.kind === "new" || tab.icon === "/studyhub.svg" || tab.icon === "/matter.svg" ? (
+                  <img src="/studyhub.svg" alt="" className="h-3.5 w-3.5 shrink-0 rounded-sm" />
                 ) : tab.icon ? (
                   <img
                     src={tab.icon}
                     alt=""
                     className="h-3.5 w-3.5 shrink-0 rounded-sm"
                     onError={(e) => {
-                      e.currentTarget.src = "/matter.svg";
+                      e.currentTarget.src = "/studyhub.svg";
                     }}
                   />
                 ) : (
-                  <img src="/matter.svg" alt="" className="h-3.5 w-3.5 shrink-0 rounded-sm" />
+                  <img src="/studyhub.svg" alt="" className="h-3.5 w-3.5 shrink-0 rounded-sm" />
                 )}
                 <span className="truncate flex-1">{tab.title}</span>
                 {tabs.length > 1 && (

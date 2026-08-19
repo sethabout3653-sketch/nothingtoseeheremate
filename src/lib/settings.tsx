@@ -77,15 +77,15 @@ export function useBrowserChrome() {
 
   useEffect(() => {
     if (!ready) return;
-    document.title = "Matter";
+    document.title = "StudyHub";
 
-    const href = "/matter.svg";
-    let link = document.querySelector<HTMLLinkElement>("link[data-matter-icon]");
+    const href = "/studyhub.svg";
+    let link = document.querySelector<HTMLLinkElement>("link[data-studyhub-icon]");
     if (!link) {
       link = document.createElement("link");
       link.rel = "icon";
       link.type = "image/svg+xml";
-      link.dataset["matterIcon"] = "true";
+      link.dataset["studyhubIcon"] = "true";
       document.head.appendChild(link);
     }
     link.href = href;

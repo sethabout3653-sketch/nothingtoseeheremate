@@ -19,7 +19,7 @@ export function newTab(): Tab {
     id: Math.random().toString(36).slice(2),
     kind: "new",
     title: "New Tab",
-    icon: "/matter.svg",
+    icon: "/studyhub.svg",
     url: "",
     target: "",
   };

@@ -16,7 +16,7 @@ type Props = {
 };
 
 export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenGames }: Props) {
-  const logoText = "Matter";
+  const logoText = "StudyHub";
   const [value, setValue] = useState("");
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
   const [adding, setAdding] = useState(false);
@@ -65,7 +65,7 @@ export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenGames }: 
             </motion.span>
           ))}
         </motion.h1>
-        <div className="mt-4 h-[3px] w-52 bg-gradient-to-r from-transparent via-foreground to-transparent" />
+        <div className="mt-4 h-[3px] w-80 md:w-96 bg-gradient-to-r from-transparent via-foreground to-transparent" />
 
         <form
           onSubmit={(e) => {
