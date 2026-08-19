@@ -6,12 +6,25 @@
     (console.error(`error while processing '${a}': `, t),
       e.postMessage({ type: "error", error: t }));
   }
+  function safeHeaders(h) {
+    if (!h) return new Headers();
+    if (h instanceof Headers) return h;
+    if (typeof h[Symbol.iterator] === "function") return h;
+    if (typeof h === "object") {
+      try {
+        return new Headers(h);
+      } catch {
+        return Object.entries(h);
+      }
+    }
+    return [];
+  }
   async function n(a, n, s) {
     const o = await s.request(
       new URL(a.fetch.remote),
       a.fetch.method,
       a.fetch.body,
-      a.fetch.headers,
+      safeHeaders(a.fetch.headers),
       null,
     );
     if (
@@ -97,7 +110,7 @@
               const [s, o] = n.connect(
                 new URL(t.websocket.url),
                 t.websocket.protocols,
-                t.websocket.requestHeaders,
+                safeHeaders(t.websocket.requestHeaders),
                 (a) => {
                   e.call(t.websocket.channel, { type: "open", args: [a] });
                 },

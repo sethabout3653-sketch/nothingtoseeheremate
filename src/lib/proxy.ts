@@ -67,18 +67,20 @@ async function ensureTransport(wisp: string) {
 
   const loaderCode = `
     const sources = [
+      "${location.origin}/proxy/epoxy.mjs",
+      "/proxy/epoxy.mjs",
+      "https://cdn.jsdelivr.net/npm/@mercuryworkshop/epoxy-transport@3.0.1/dist/index.mjs",
+      "https://unpkg.com/@mercuryworkshop/epoxy-transport/dist/index.mjs",
       "${location.origin}/proxy/libcurl.mjs",
       "/proxy/libcurl.mjs",
       "https://cdn.jsdelivr.net/npm/@mercuryworkshop/libcurl-transport@2.0.5/dist/index.mjs",
-      "https://unpkg.com/@mercuryworkshop/libcurl-transport/dist/index.mjs",
-      "${location.origin}/proxy/epoxy.mjs",
-      "https://cdn.jsdelivr.net/npm/@mercuryworkshop/epoxy-transport@3.0.1/dist/index.mjs"
+      "https://unpkg.com/@mercuryworkshop/libcurl-transport/dist/index.mjs"
     ];
     let lastError;
     for (const src of sources) {
       try {
         const mod = await import(src);
-        const BareTransport = mod.default || mod.LibcurlTransport || mod.EpoxyTransport || mod.BareTransport;
+        const BareTransport = mod.default || mod.EpoxyTransport || mod.LibcurlTransport || mod.BareTransport;
         if (BareTransport) {
           return [BareTransport, src];
         }
@@ -86,7 +88,7 @@ async function ensureTransport(wisp: string) {
         lastError = e;
       }
     }
-    throw lastError || new Error("Failed to load BareTransport (Libcurl) from all available sources");
+    throw lastError || new Error("Failed to load BareTransport (Epoxy/Libcurl) from all available sources");
   `;
 
   await setManualTransport.call(connection, loaderCode, [{ wisp: normalizedWisp }]);
