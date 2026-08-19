@@ -12,10 +12,10 @@ type Props = {
   engine: string;
   onEngineChange: (url: string) => void;
   onNavigate: (input: string) => void;
-  onOpenGames: () => void;
+  onOpenLessons: () => void;
 };
 
-export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenGames }: Props) {
+export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenLessons }: Props) {
   const logoText = "Matter";
   const [value, setValue] = useState("");
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
@@ -96,7 +96,7 @@ export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenGames }: 
         </form>
 
         <div className="mt-14 flex flex-wrap items-start justify-center gap-10">
-          <ShortcutButton label="Lessons" onClick={onOpenGames}>
+          <ShortcutButton label="Lessons" onClick={onOpenLessons}>
             <BookOpen className="h-6 w-6" />
           </ShortcutButton>
 

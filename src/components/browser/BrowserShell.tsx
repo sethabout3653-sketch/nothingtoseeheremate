@@ -12,10 +12,10 @@ import { motion, AnimatePresence } from "motion/react";
 
 import { toUrl } from "@/lib/proxy";
 import { useBrowserChrome, useSettings } from "@/lib/settings";
-import type { Game } from "@/lib/games";
+import type { Lesson } from "@/lib/lessons";
 import { ChromeIcon } from "./ChromeIcon";
-import { GameView } from "./GameView";
-import { GamesLibrary } from "./GamesLibrary";
+import { LessonView } from "./GameView";
+import { LessonsLibrary } from "./GamesLibrary";
 import { NewTabPage } from "./NewTabPage";
 import { SettingsPanel } from "./SettingsPanel";
 import { WebView, faviconFor } from "./WebView";
@@ -73,18 +73,22 @@ export function BrowserShell() {
     setOmnibox(url);
   };
 
-  const openGames = (id = activeId) =>
-    patchTab(id, { kind: "games", title: "Lessons", url: "frosted://lessons", icon: "" });
+  const openLessons = (id = activeId) =>
+    patchTab(id, { kind: "lessons", title: "Lessons", url: "frosted://lessons", icon: "" });
 
-  const launchGame = (game: Game) =>
+  const launchLesson = (lesson: Lesson) =>
     patchTab(activeId, {
-      kind: "game",
-      title: game.name,
-      url: `frosted://lessons/${game.id}`,
-      gameId: game.id,
-      gameUrl: game.url,
-      gameName: game.name,
-      gameAuthor: game.author,
+      kind: "lesson",
+      title: lesson.name,
+      url: `frosted://lessons/${lesson.id}`,
+      lessonId: lesson.id,
+      lessonUrl: lesson.url,
+      lessonName: lesson.name,
+      lessonAuthor: lesson.author,
+      gameId: lesson.id,
+      gameUrl: lesson.url,
+      gameName: lesson.name,
+      gameAuthor: lesson.author,
     });
 
   return (
@@ -207,7 +211,7 @@ export function BrowserShell() {
 
         <ToolbarButton
           label="Lessons"
-          onClick={() => addTab({ kind: "games", title: "Lessons", url: "frosted://lessons" })}
+          onClick={() => addTab({ kind: "lessons", title: "Lessons", url: "frosted://lessons" })}
         >
           <BookOpen className="h-4 w-4" />
         </ToolbarButton>
@@ -239,16 +243,18 @@ export function BrowserShell() {
                 engine={settings.engine}
                 onEngineChange={(engine) => update({ engine })}
                 onNavigate={(input) => navigate(input, tab.id)}
-                onOpenGames={() => openGames(tab.id)}
+                onOpenLessons={() => openLessons(tab.id)}
               />
             )}
-            {tab.kind === "games" && <GamesLibrary onLaunch={launchGame} />}
-            {tab.kind === "game" && (
-              <GameView
-                url={tab.gameUrl ?? ""}
-                name={tab.gameName ?? tab.title}
-                author={tab.gameAuthor}
-                onBack={() => openGames(tab.id)}
+            {(tab.kind === "lessons" || tab.kind === "games") && (
+              <LessonsLibrary onLaunch={launchLesson} />
+            )}
+            {(tab.kind === "lesson" || tab.kind === "game") && (
+              <LessonView
+                url={tab.lessonUrl ?? tab.gameUrl ?? ""}
+                name={tab.lessonName ?? tab.gameName ?? tab.title}
+                author={tab.lessonAuthor ?? tab.gameAuthor}
+                onBack={() => openLessons(tab.id)}
               />
             )}
             {tab.kind === "web" && (

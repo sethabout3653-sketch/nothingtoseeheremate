@@ -11,13 +11,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Matter is a monochrome tabbed proxy browser with built-in lessons and close protection.",
+          "Matter is a monochrome tabbed browser with built-in lessons and close protection.",
       },
       { property: "og:title", content: "Matter — Private Browser & Lessons" },
       {
         property: "og:description",
-        content:
-          "Browse the web through a fast proxy and access lessons in one clean black-and-white workspace.",
+        content: "Browse the web and access lessons in one clean black-and-white workspace.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },

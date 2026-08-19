@@ -70,7 +70,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "Matter" },
       {
         name: "description",
-        content: "Matter — a monochrome proxy browser with built-in lessons.",
+        content: "Matter — a monochrome browser with built-in lessons.",
       },
       { property: "og:site_name", content: "Matter" },
       { property: "og:type", content: "website" },

@@ -1,6 +1,6 @@
-# Frosted Games
+# Matter
 
-make a app that looks exactly like this, no music no movies no ai just games and make app functionable and when searched change tab title and favicon and url and the app is powered by scramjet and as well as the games but uses lumin game source and when clicked games it adds a new tab and show the games library the actual library and game render and NO TEXT PLAIN WHEN PLAYING GAME ACTUALLY RENDER THE GAME AND MAKE THE WHOLE APP FUNCTIONABLE AND IN SETTINGS HAVE TAB CLOAK AND TAB CLOSE PROTECTION AND BLACK AND WHITE AND IS CALLED "Frosted"
+A monochrome browser workspace with built-in lessons and tabs.
 
 This project was built with [Lovable](https://lovable.dev).
 

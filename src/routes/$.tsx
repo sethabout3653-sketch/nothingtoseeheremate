@@ -10,7 +10,7 @@ export const Route = createFileRoute("/$")({
       { title: "Matter" },
       {
         name: "description",
-        content: "Matter — a monochrome proxy browser with built-in lessons.",
+        content: "Matter — a monochrome browser with built-in lessons.",
       },
     ],
     links: [{ rel: "icon", href: "/matter.svg", type: "image/svg+xml" }],

@@ -74,7 +74,7 @@ export function WebView({ url, wisp, active, onMeta, registerNav }: Props) {
           (sjFrame["go"] as (u: string) => void).call(sjFrame, lastUrl.current);
         }
       } catch (error) {
-        console.error("Proxy failed to start", error);
+        console.error("Connection failed to start", error);
         metaRef.current({ title: "Connection failed" });
       }
     })();
