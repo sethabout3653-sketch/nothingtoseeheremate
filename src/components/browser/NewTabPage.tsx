@@ -25,7 +25,12 @@ export function NewTabPage({ engine, onEngineChange, onNavigate, onOpenGames }: 
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setShortcuts(JSON.parse(raw) as Shortcut[]);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Shortcut[];
+        if (Array.isArray(parsed)) {
+          setShortcuts(parsed);
+        }
+      }
     } catch {
       /* ignore */
     }

@@ -13,6 +13,53 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
 function NotFoundComponent() {
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // 1. If running inside an iframe, don't redirect the parent.
+    // However, if the iframe itself gets navigated to a top-level proxy URL,
+    // we want to ensure it remains a seamless experience.
+    if (window.self !== window.top) {
+      return;
+    }
+
+    // 2. If loaded at the top-level window and pathname contains scramjet proxy, redirect back home
+    const pathname = window.location.pathname;
+    if (pathname.includes("/~/scramjet/")) {
+      const parts = pathname.split("/~/scramjet/");
+      if (parts.length > 1) {
+        const afterProxy = parts[1];
+        const pathParts = afterProxy.split("/");
+        let targetPart = afterProxy;
+
+        // If it starts with an 8-character hex/alphanumeric frameId, skip it
+        if (pathParts.length > 1 && /^[a-z0-9]{8}$/i.test(pathParts[0])) {
+          targetPart = pathParts.slice(1).join("/");
+        }
+
+        try {
+          let decoded = decodeURIComponent(targetPart);
+          if (!decoded.startsWith("http://") && !decoded.startsWith("https://")) {
+            decoded = decodeURIComponent(decoded);
+          }
+          if (decoded.startsWith("http://") || decoded.startsWith("https://")) {
+            window.location.replace("/?url=" + encodeURIComponent(decoded));
+            return;
+          }
+        } catch (e) {
+          console.error("Failed parsing top-level proxy URL for redirect", e);
+        }
+      }
+      window.location.replace("/");
+    }
+  }, []);
+
+  // 3. STRICT REQUIREMENT: If this route is rendered inside an iframe (proxy window),
+  // hide the 404 UI completely to prevent "Page not found" from showing inside video/web components.
+  if (typeof window !== "undefined" && window.self !== window.top) {
+    return null;
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">

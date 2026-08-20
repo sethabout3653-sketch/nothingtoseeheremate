@@ -1,3 +1,31 @@
+(function(g,f){if(typeof exports=="object"&&typeof module<"u"){module.exports=f(require)}else if("function"==typeof define && define.amd){define("EpoxyTransport",["fs","path"],function(_d_0,_d_1){var d={"fs": _d_0,"path": _d_1},r=function(m){if(m in d) return d[m];if(typeof require=="function") return require(m);throw new Error("Cannot find module '"+m+"'")};return f(r)})}else {var gN={"fs":"fs","path":"path"},gReq=function(r){var mod = r in gN ? g[gN[r]] : g[r]; return mod };g["EpoxyTransport"]=f(gReq)}}(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : this,function(require){var exports={};var __exports=exports;var module={exports};
+"use strict";
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/main.ts
+var main_exports = {};
+__export(main_exports, {
+  default: () => EpoxyTransport,
+  epoxyInfo: () => info
+});
+module.exports = __toCommonJS(main_exports);
+
 // <data:text/javascript;base64,CmV4cG9ydCBmdW5jdGlvbiB3c19wcm90b2Nv...>
 function ws_protocol() {
   return ("10000000-1000-4000-8000" + -1e11).replace(
@@ -52,6 +80,7 @@ function from_entries(entries) {
 }
 
 // node_modules/.pnpm/@mercuryworkshop+epoxy-tls@2.1.19-1/node_modules/@mercuryworkshop/epoxy-tls/full/epoxy-bundled.js
+var import_meta = {};
 var wasm;
 function addHeapObject(obj) {
   if (heap_next === heap.length) heap.push(heap.length + 1);
@@ -1507,7 +1536,7 @@ async function __wbg_init(module_or_path) {
     }
   }
   if (typeof module_or_path === "undefined") {
-    module_or_path = new URL("epoxy.wasm", import.meta.url);
+    module_or_path = new URL("epoxy.wasm", import_meta.url);
   }
   const imports = __wbg_get_imports();
   if (typeof module_or_path === "string" || typeof Request === "function" && module_or_path instanceof Request || typeof URL === "function" && module_or_path instanceof URL) {
@@ -1633,7 +1662,5 @@ var EpoxyTransport = class {
     ];
   }
 };
-export {
-  EpoxyTransport as default,
-  info as epoxyInfo
-};
+
+if(__exports != exports)module.exports = exports;return module.exports}));

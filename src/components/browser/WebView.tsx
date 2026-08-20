@@ -3,7 +3,6 @@ import { useEffect, useRef } from "react";
 import {
   ensureTransport,
   faviconFor,
-  getAutoEngineForUrl,
   getAutoTransportForUrl,
   getAutoWispForUrl,
   getProxyUrl,
@@ -35,69 +34,71 @@ export function WebView({ url, wisp, active, onMeta, registerNav }: Props) {
     (async () => {
       try {
         const targetUrl = url || lastUrl.current;
+        if (targetUrl) lastUrl.current = targetUrl;
         const targetWisp = wisp || getAutoWispForUrl(targetUrl);
         const preferredTransport = getAutoTransportForUrl(targetUrl);
         const controller = await initProxy(targetWisp, targetUrl);
         if (cancelled || !hostRef.current) return;
 
-        const engine = getAutoEngineForUrl(targetUrl);
+        const iframe = document.createElement("iframe");
+        iframeRef.current = iframe;
+        iframe.className = "h-full w-full border-0 bg-white";
+        iframe.style.width = "100%";
+        iframe.style.height = "100%";
+        iframe.style.border = "0";
+        iframe.style.display = "block";
+        iframe.setAttribute(
+          "allow",
+          "fullscreen; autoplay; gamepad; clipboard-read; clipboard-write; encrypted-media; picture-in-picture; camera; microphone; geolocation; midi; accelerometer; gyroscope; xr-spatial-tracking",
+        );
+        iframe.setAttribute("allowfullscreen", "true");
 
-        if (
-          engine === "scramjet" &&
-          controller &&
-          typeof controller["createFrame"] === "function"
-        ) {
-          const createFrame = controller["createFrame"] as () => AnyRecord;
-          const sjFrame = createFrame.call(controller);
-          frameRef.current = sjFrame;
+        if (controller && typeof controller["createFrame"] === "function") {
+          try {
+            if (typeof controller["wait"] === "function") {
+              await (controller["wait"] as () => Promise<void>).call(controller);
+            }
+            const createFrame = controller["createFrame"] as (el: HTMLIFrameElement) => AnyRecord;
+            const sjFrame = createFrame.call(controller, iframe);
+            frameRef.current = sjFrame;
 
-          const iframe = sjFrame["frame"] as HTMLIFrameElement;
-          iframeRef.current = iframe;
-          iframe.className = "h-full w-full border-0 bg-background";
-          iframe.style.width = "100%";
-          iframe.style.height = "100%";
-          iframe.style.border = "0";
-          iframe.style.display = "block";
-          iframe.setAttribute(
-            "allow",
-            "fullscreen; autoplay; gamepad; clipboard-read; clipboard-write; encrypted-media; picture-in-picture; camera; microphone; geolocation; midi; accelerometer; gyroscope; xr-spatial-tracking",
-          );
-          iframe.setAttribute("allowfullscreen", "true");
-          hostRef.current.replaceChildren(iframe);
+            registerNav({
+              back: () => {
+                if (typeof sjFrame["back"] === "function") {
+                  (sjFrame["back"] as () => void).call(sjFrame);
+                } else {
+                  iframe.contentWindow?.history.back();
+                }
+              },
+              forward: () => {
+                if (typeof sjFrame["forward"] === "function") {
+                  (sjFrame["forward"] as () => void).call(sjFrame);
+                } else {
+                  iframe.contentWindow?.history.forward();
+                }
+              },
+              reload: () => {
+                if (typeof sjFrame["reload"] === "function") {
+                  (sjFrame["reload"] as () => void).call(sjFrame);
+                } else {
+                  const currentSrc = iframe.src;
+                  if (currentSrc) iframe.src = currentSrc;
+                }
+              },
+            });
 
-          registerNav({
-            back: () => (sjFrame["back"] as () => void).call(sjFrame),
-            forward: () => (sjFrame["forward"] as () => void).call(sjFrame),
-            reload: () => (sjFrame["reload"] as () => void).call(sjFrame),
-          });
-
-          const addEvent = sjFrame["addEventListener"] as (
-            type: string,
-            cb: (e: { url: string }) => void,
-          ) => void;
-          addEvent.call(sjFrame, "urlchange", (event) => {
-            if (!event.url) return;
-            metaRef.current({ url: event.url, icon: faviconFor(event.url) });
-          });
-
-          if (lastUrl.current) {
-            (sjFrame["go"] as (u: string) => void).call(sjFrame, lastUrl.current);
+            if (targetUrl) {
+              if (typeof sjFrame["go"] === "function") {
+                (sjFrame["go"] as (u: string) => void).call(sjFrame, targetUrl);
+              } else {
+                iframe.src = getProxyUrl(targetUrl);
+              }
+            }
+          } catch (err) {
+            console.warn("Scramjet controller frame attach fallback:", err);
+            if (targetUrl) iframe.src = getProxyUrl(targetUrl);
           }
         } else {
-          // Standard / Ultraviolet auto routing
-          const iframe = document.createElement("iframe");
-          iframeRef.current = iframe;
-          iframe.className = "h-full w-full border-0 bg-background";
-          iframe.style.width = "100%";
-          iframe.style.height = "100%";
-          iframe.style.border = "0";
-          iframe.style.display = "block";
-          iframe.setAttribute(
-            "allow",
-            "fullscreen; autoplay; gamepad; clipboard-read; clipboard-write; encrypted-media; picture-in-picture; camera; microphone; geolocation; midi; accelerometer; gyroscope; xr-spatial-tracking",
-          );
-          iframe.setAttribute("allowfullscreen", "true");
-
           registerNav({
             back: () => {
               try {
@@ -123,35 +124,35 @@ export function WebView({ url, wisp, active, onMeta, registerNav }: Props) {
             },
           });
 
-          iframe.onload = () => {
-            try {
-              const doc = iframe.contentDocument;
-              if (doc?.title) {
-                metaRef.current({ title: doc.title });
-              }
-            } catch {
-              /* cross origin */
-            }
-          };
-
-          hostRef.current.replaceChildren(iframe);
-
-          if (lastUrl.current) {
-            iframe.src = getProxyUrl(lastUrl.current, engine);
+          if (targetUrl) {
+            iframe.src = getProxyUrl(targetUrl);
           }
         }
 
+        iframe.onload = () => {
+          try {
+            const doc = iframe.contentDocument;
+            if (doc?.title) {
+              metaRef.current({ title: doc.title });
+            }
+          } catch {
+            /* cross origin */
+          }
+        };
+
+        hostRef.current.replaceChildren(iframe);
+
         poll = setInterval(() => {
           try {
-            const iframe = iframeRef.current;
-            const doc = iframe?.contentDocument;
+            const currentFrame = iframeRef.current;
+            const doc = currentFrame?.contentDocument;
             if (doc?.title) metaRef.current({ title: doc.title });
           } catch {
             /* cross-origin document, ignore */
           }
         }, 1200);
       } catch (error) {
-        console.error("Proxy auto-start notice:", error);
+        console.error("Scramjet v2 proxy auto-start notice:", error);
         metaRef.current({ title: "Connecting..." });
       }
     })();
@@ -171,11 +172,14 @@ export function WebView({ url, wisp, active, onMeta, registerNav }: Props) {
     const preferredTransport = getAutoTransportForUrl(url);
     ensureTransport(targetWisp, preferredTransport).catch(() => {});
 
-    const engine = getAutoEngineForUrl(url);
-    if (frameRef.current && typeof frameRef.current["go"] === "function" && engine === "scramjet") {
-      (frameRef.current["go"] as (u: string) => void).call(frameRef.current, url);
+    if (frameRef.current && typeof frameRef.current["go"] === "function") {
+      try {
+        (frameRef.current["go"] as (u: string) => void).call(frameRef.current, url);
+      } catch {
+        if (iframeRef.current) iframeRef.current.src = getProxyUrl(url);
+      }
     } else if (iframeRef.current) {
-      iframeRef.current.src = getProxyUrl(url, engine);
+      iframeRef.current.src = getProxyUrl(url);
     }
     metaRef.current({ url, icon: faviconFor(url) });
   }, [url, wisp]);
