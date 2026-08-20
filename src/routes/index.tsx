@@ -10,8 +10,7 @@ export const Route = createFileRoute("/")({
       { title: "StudyHub — Educational Workspace & Browser" },
       {
         name: "description",
-        content:
-          "StudyHub is a workspace and web browser with educational tools and lessons.",
+        content: "StudyHub is a workspace and web browser with educational tools and lessons.",
       },
       { property: "og:title", content: "StudyHub — Educational Workspace & Browser" },
       {

@@ -15,33 +15,27 @@ export type Game = {
  * - Covers: freebuisness/covers
  * - Game HTML bundles: freebuisness/html
  */
-export const GN_MATH_ZONES = "https://cdn.jsdelivr.net/gh/freebuisness/assets@latest/zones.json";
-export const GN_MATH_TAGS_ZONES =
-  "https://cdn.jsdelivr.net/gh/sealiee11/gnmathstuff@main/zones.json";
+export const GN_MATH_ZONES_SOURCES = [
+  "https://cdn.jsdelivr.net/gh/freebuisness/assets@latest/zones.json",
+  "https://raw.githubusercontent.com/freebuisness/assets/main/zones.json",
+  "https://cdn.jsdelivr.net/gh/sealiee11/gnmathstuff@main/zones.json",
+  "https://raw.githubusercontent.com/sealiee11/gnmathstuff/main/zones.json",
+];
+export const GN_MATH_ZONES = GN_MATH_ZONES_SOURCES[0]!;
+export const GN_MATH_TAGS_ZONES = GN_MATH_ZONES_SOURCES[2]!;
 export const GN_MATH_COVERS = "https://cdn.jsdelivr.net/gh/freebuisness/covers@main";
-export const GN_MATH_HTML = "https://cdn.jsdelivr.net/gh/freebuisness/html@main";
 
-let cachedCommit = "8ef4c030fa3b63ab71d7ab989031000220b334f7";
-let commitFetched = false;
+export const GN_MATH_HTML_CDNS = [
+  "https://cdn.jsdelivr.net/gh/freebuisness/html@main",
+  "https://raw.githubusercontent.com/freebuisness/html/main",
+  "https://rawcdn.githack.com/freebuisness/html/main",
+  "https://fastly.jsdelivr.net/gh/freebuisness/html@main",
+  "https://gcore.jsdelivr.net/gh/freebuisness/html@main",
+];
+export const GN_MATH_HTML = GN_MATH_HTML_CDNS[0]!;
 
 export async function getLatestHtmlCdn(): Promise<string> {
-  if (commitFetched) {
-    return `https://cdn.jsdelivr.net/gh/freebuisness/html@${cachedCommit}`;
-  }
-  try {
-    const res = await fetch("https://gn-math.dev/commits", { cache: "no-store" });
-    if (res.ok) {
-      const hash = (await res.text()).trim();
-      if (hash && /^[0-9a-fA-F]{20,40}$/.test(hash)) {
-        cachedCommit = hash;
-      }
-    }
-  } catch {
-    /* fallback to known good commit */
-  } finally {
-    commitFetched = true;
-  }
-  return `https://cdn.jsdelivr.net/gh/freebuisness/html@${cachedCommit}`;
+  return GN_MATH_HTML;
 }
 
 export function resolveCoverUrl(cover: string): string {
@@ -207,62 +201,75 @@ export function sanitizeGameHtml(rawHtml: string): string {
 }
 
 export async function fetchGameHtml(rawUrl: string): Promise<string> {
-  const htmlCdn = await getLatestHtmlCdn();
-  const resolved = resolveGameUrl(rawUrl, htmlCdn);
-  try {
-    const res = await fetch(`${resolved}?t=${Date.now()}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    if (text.trim().startsWith("Couldn't find the requested file")) {
-      // Fallback to main branch
-      const fallbackUrl = rawUrl
-        .replace("{COVER_URL}", GN_MATH_COVERS)
-        .replace("{HTML_URL}", GN_MATH_HTML);
-      const res2 = await fetch(`${fallbackUrl}?t=${Date.now()}`);
-      if (!res2.ok) throw new Error(`HTTP ${res2.status}`);
-      const text2 = await res2.text();
-      return sanitizeGameHtml(text2);
+  const isDirectUrl = rawUrl.startsWith("http") && !rawUrl.includes("{");
+  const candidates = isDirectUrl
+    ? [rawUrl]
+    : GN_MATH_HTML_CDNS.map((cdn) =>
+        rawUrl.replace("{COVER_URL}", GN_MATH_COVERS).replace("{HTML_URL}", cdn),
+      );
+
+  let lastError: Error | null = null;
+  for (const candidateUrl of candidates) {
+    try {
+      const res = await fetch(`${candidateUrl}?t=${Date.now()}`, {
+        signal: AbortSignal.timeout(6000),
+      });
+      if (!res.ok) continue;
+      const text = await res.text();
+      if (
+        !text ||
+        text.trim().startsWith("Couldn't find the requested file") ||
+        text.trim() === "404: Not Found"
+      ) {
+        continue;
+      }
+      return sanitizeGameHtml(text);
+    } catch (err) {
+      lastError = err instanceof Error ? err : new Error(String(err));
     }
-    return sanitizeGameHtml(text);
-  } catch (err) {
-    console.error("Failed to fetch game HTML:", err);
-    throw err;
   }
+
+  const errMessage = lastError ? lastError.message : "Game assets not found on any mirror";
+  console.error("Failed to fetch game HTML:", errMessage);
+  throw new Error(`Failed to load game HTML: ${errMessage}`);
 }
 
 export async function fetchGames(): Promise<Game[]> {
   try {
-    const [zonesRes, tagsRes] = await Promise.allSettled([
-      fetch(GN_MATH_ZONES),
-      fetch(GN_MATH_TAGS_ZONES),
-    ]);
+    const fetchPromises = GN_MATH_ZONES_SOURCES.map((url) =>
+      fetch(url, { signal: AbortSignal.timeout(6000) })
+        .then(async (res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return (await res.json()) as Game[];
+        })
+        .catch(() => null),
+    );
 
-    let rawGames: Game[] = [];
-    if (zonesRes.status === "fulfilled" && zonesRes.value.ok) {
-      rawGames = (await zonesRes.value.json()) as Game[];
-    } else if (tagsRes.status === "fulfilled" && tagsRes.value.ok) {
-      rawGames = (await tagsRes.value.json()) as Game[];
+    const results = await Promise.all(fetchPromises);
+    const validResults = results.filter((r): r is Game[] => Array.isArray(r) && r.length > 0);
+
+    if (validResults.length === 0) {
+      throw new Error("Unable to reach game metadata mirrors");
     }
 
-    // Index tags by game ID or name if available
+    // Pick the most complete result as primary
+    validResults.sort((a, b) => b.length - a.length);
+    const primaryGames = validResults[0]!;
+
+    // Build tags map from all available sources
     const tagMap = new Map<string | number, string[]>();
-    if (tagsRes.status === "fulfilled" && tagsRes.value.ok) {
-      try {
-        const tagGames = (await tagsRes.value.json()) as Game[];
-        for (const tg of tagGames) {
-          if (tg.tags && Array.isArray(tg.tags) && tg.tags.length > 0) {
-            tagMap.set(tg.id, tg.tags);
-            tagMap.set(tg.name.toLowerCase(), tg.tags);
-          }
+    for (const list of validResults) {
+      for (const item of list) {
+        if (item.tags && Array.isArray(item.tags) && item.tags.length > 0) {
+          if (item.id !== undefined) tagMap.set(item.id, item.tags);
+          if (item.name) tagMap.set(item.name.toLowerCase(), item.tags);
         }
-      } catch {
-        /* ignore tag parsing error */
       }
     }
 
     // Filter valid games (exclude discord suggestions/non-game placeholders)
     const validGames: Game[] = [];
-    for (const g of rawGames) {
+    for (const g of primaryGames) {
       if (!g || !g.name || !g.url) continue;
       const numId = Number(g.id);
       if (numId < 0) continue;

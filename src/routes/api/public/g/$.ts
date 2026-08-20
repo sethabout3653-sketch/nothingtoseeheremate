@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 
 const CDNS = [
   "https://cdn.jsdelivr.net/gh/freebuisness/html@main",
+  "https://raw.githubusercontent.com/freebuisness/html/main",
+  "https://rawcdn.githack.com/freebuisness/html/main",
+  "https://fastly.jsdelivr.net/gh/freebuisness/html@main",
   "https://cdn.jsdelivr.net/gh/selenite-cc/selenite-old@main",
 ];
 const PREFIX = "/api/public/g";

@@ -10,7 +10,7 @@ import {
 import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 
-import { toUrl } from "@/lib/proxy";
+import { faviconFor, toUrl } from "@/lib/proxy";
 import { useBrowserChrome, useSettings } from "@/lib/settings";
 import type { Game } from "@/lib/games";
 import { ChromeIcon } from "./ChromeIcon";
@@ -18,7 +18,7 @@ import { GameView } from "./GameView";
 import { GamesLibrary } from "./GamesLibrary";
 import { NewTabPage } from "./NewTabPage";
 import { SettingsPanel } from "./SettingsPanel";
-import { WebView, faviconFor } from "./WebView";
+import { WebView } from "./WebView";
 import { newTab, type Tab } from "./types";
 
 type Nav = { back: () => void; forward: () => void; reload: () => void } | null;
@@ -114,7 +114,9 @@ export function BrowserShell() {
               >
                 {tab.kind === "games" || tab.kind === "game" ? (
                   <BookOpen className="h-3.5 w-3.5 shrink-0" />
-                ) : tab.kind === "new" || tab.icon === "/studyhub.svg" || tab.icon === "/matter.svg" ? (
+                ) : tab.kind === "new" ||
+                  tab.icon === "/studyhub.svg" ||
+                  tab.icon === "/matter.svg" ? (
                   <img src="/studyhub.svg" alt="" className="h-3.5 w-3.5 shrink-0 rounded-sm" />
                 ) : tab.icon ? (
                   <img

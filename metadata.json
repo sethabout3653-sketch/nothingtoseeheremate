@@ -1,0 +1,6 @@
+{
+  "name": "Frosted Proxy Browser & Games",
+  "description": "A frosted browser and games hub with web proxy and game collection.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

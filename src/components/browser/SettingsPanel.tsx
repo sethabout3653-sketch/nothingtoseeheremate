@@ -54,17 +54,6 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-function openAboutBlank() {
-  const win = window.open("about:blank", "_blank");
-  if (!win) return;
-  const frame = win.document.createElement("iframe");
-  frame.style.cssText = "position:fixed;inset:0;border:0;width:100%;height:100%";
-  frame.src = window.location.href;
-  win.document.body.style.margin = "0";
-  win.document.body.appendChild(frame);
-  window.location.replace("https://classroom.google.com");
-}
-
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-8 border-t border-border pt-6 first-of-type:border-0">
@@ -95,35 +84,5 @@ function Field({
         className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none placeholder:text-muted-foreground"
       />
     </label>
-  );
-}
-
-function Toggle({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <button
-      onClick={() => onChange(!checked)}
-      className="flex w-full items-center justify-between rounded-lg border border-border px-3 py-2 text-left text-sm text-foreground"
-    >
-      {label}
-      <span
-        className={`ml-3 h-5 w-9 shrink-0 rounded-full border border-border p-0.5 transition-colors ${
-          checked ? "bg-foreground" : "bg-background"
-        }`}
-      >
-        <span
-          className={`block h-3.5 w-3.5 rounded-full transition-transform ${
-            checked ? "translate-x-4 bg-background" : "bg-muted-foreground"
-          }`}
-        />
-      </span>
-    </button>
   );
 }
